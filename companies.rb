@@ -89,7 +89,7 @@ post '/create' do
     :description => params[:company_description],
     :company_email => params[:company_email],
     :admin_email => params[:admin_email],
-    :status => :pending)
+    :status => :activated)
 
   if @company.save
     # TODO
@@ -98,6 +98,8 @@ post '/create' do
       "Please click this link or copy and paste it into your browser http://localhost:4567/update/#{@company.uuid}")
       @company.update_attributes(:status => :notified)
     end
+
+    puts "Use this link - http://localhost:4567/edit/#{@company.uuid}"
 
     redirect '/'
   else
@@ -133,12 +135,14 @@ get '/update/:uuid' do
     erb :welcome
   else
     # TODO: Move this out of here eventually
-    raise 'Your account is not currently active. Please contact our support team.'
+    raise 'Your account is not currently active or cannot be activated. Please contact our support team.'
   end
 end
 
 post '/update/:uuid' do
   @company = Company.first(:uuid => params[:uuid])
+
+  #debugger
 
 # TODO: Commented out until we see if we can do an POST account activation
 #  # First time, this is called activate account
@@ -148,17 +152,17 @@ post '/update/:uuid' do
 #    erb :welcome
 #
 #  elsif @company.status == :activated
+
     if @company.status == :activated
 
-    @company.update_attributes(
-      :website => params[:company_website],
-      :blurb => params[:company_blurb],
-      :name => params[:company_name],
-      :description => params[:company_description],
-      :company_email => params[:company_email],
-      :admin_email => params[:admin_email])
+      if @company.update_attributes(
+        :website => params[:company_website],
+        :blurb => params[:company_blurb],
+        :name => params[:company_name],
+        :description => params[:company_description],
+        :company_email => params[:company_email],
+        :admin_email => params[:admin_email])
 
-    if @company.save
       redirect '/'
     else
       erb :new
