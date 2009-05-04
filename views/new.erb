@@ -3,9 +3,9 @@
   <form action="/companies" method="POST" id="companyDetails" class="clearfix">
 <fieldset id="part1">	
    <label for "company_name">Name </label> <input type="text" name="company_name" id="company_name" value="<%= @company.name %>"></input><br/>
-        <%= select('company', 'business_category', @industry_list, '0') %>
+   <%= select('company', 'business_category', @industry_list, "#{@company.business_category}") %>
 	<br />
-     We  <%= select('company', 'usage_level', @usage_level_list, '0') %>  Open Source
+	We  <%= select('company', 'usage_level', @usage_level_list, "#{@company.usage_level}") %>  Open Source
    <label for "company_website"> Website http:// </label> <input type="text" name="company_website" id="company_website" value="<%= @company.website %>"></input>
 
   <label for "company_email"> Company Email </label> <input type="text" name="company_email" id="company_email" value="<%= @company.company_email %>"></input>

@@ -20,9 +20,8 @@ use Rack::Flash
 
 MAILER_ENABLED = false # Set this to true if you have a valid mail configuration in emailconfig.rb
 DOMAIN = 'localhost:4567'
-@@industry_list = [{'0' => 'Select your business category'},
-  {'1' => 'Pharmacueto'},
-  {'2' => 'Government'}].freeze
+load 'industry_list.rb' # Pulls in a list of industriesm simply defines @@industry_list
+
 @@usage_level_list = [
   {'1' => 'Use'},
   {'2' => 'Develop'},
@@ -132,10 +131,12 @@ get '/companies/new' do
 end
 
 post '/companies' do
+  @industry_list = @@industry_list
+  @usage_level_list = @@usage_level_list
 
   @company = Company.new(
-    :business_category => params[:business_category],
-    :usage_level => params[:usage_level],
+    :business_category => params[:company_business_category],
+    :usage_level => params[:company_usage_level],
     :website => params[:company_website],
     :name => params[:company_name],
     :blurb => params[:company_blurb],
@@ -160,19 +161,25 @@ post '/companies' do
 end
 
 get '/companies/:uuid/edit' do
+  @industry_list = @@industry_list
+  @usage_level_list = @@usage_level_list
+
   @company = Company.first(:uuid => params[:uuid])
   raise 'No such account.' if @company.nil?
   erb :edit
 end
 
 put '/companies/:uuid' do
+  @industry_list = @@industry_list
+  @usage_level_list = @@usage_level_list
+
   @company = Company.first(:uuid => params[:uuid])
 
   if @company.status == :activated
 
     if @company.update_attributes(
-      :business_category => params[:business_category],
-      :usage_level => params[:usage_level],
+      :business_category => params[:company_business_category],
+      :usage_level => params[:company_usage_level],
       :website => params[:company_website],
       :blurb => params[:company_blurb],
       :name => params[:company_name],
@@ -221,7 +228,6 @@ helpers do
     end
     "<select name=\"#{resource_name}_#{field_name}\">#{html}</select>"
   end
-
 
 end
 
