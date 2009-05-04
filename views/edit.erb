@@ -1,13 +1,23 @@
-<div>
+<div id = "contain">
   <form action="/companies/<%= @company.uuid %>" method="POST">
     <input name="_method" value="put" />
 
-    Name <input type="text" name="company_name" id="company_name" value="<%= @company.name %>"></input>
-    <br/>Website http:// <input type="text" name="company_website" id="company_website" value="<%= @company.website %>"></input>
-    <br/>Company Email <input type="text" name="company_email" id="company_email" value="<%= @company.company_email %>"></input>
-    <br/>Administrative Email <input type="text" name="admin_email" id="admin_email" value="<%= @company.admin_email %>"></input>
-    <br/>Blurb <input type="text" name="company_blurb" id="company_blurb" value="<%= @company.blurb %>"></input>
-    <br/>Description <textarea name="company_description" id="company_description" rows="20" value="<%= @company.description %>"></textarea>
+    <label for "company_name">Name </label><input type="text" name="company_name" id="company_name" value="<%= @company.name %>"></input></br>
+	<select id = "business_category" name = "business_category">
+		<option selected = "" value ="0"> "Select your business category" </option>
+		<option value ="1"> Pharmacueto</option>
+		<option value ="2"> Government</option>
+	</select> </br>
+ I <select id = "usage_level" name = "usage_level">  
+		<option "0" > Use </option>
+		<option value ="1"> Develop</option>
+		<option value ="2"> Sell </option>  
+	</select> Open Source products
+    <br/><label for "company_website"> Website http:// </label><input type="text" name="company_website" id="company_website" value="<%= @company.website %>"></input>
+    <br/><label for "company_email">Company Email </label><input type="text" name="company_email" id="company_email" value="<%= @company.company_email %>"></input>
+    <br/><label for "admin_email"><Administrative Email </label><input type="text" name="admin_email" id="admin_email" value="<%= @company.admin_email %>"></input>
+    <br/><label for "company_blurb">Blurb </label><input type="text" name="company_blurb" id="company_blurb" value="<%= @company.blurb %>"></input>
+    <br/><label for "company_description">Blurb </label>Description <textarea name="company_description" id="company_description" rows="20" value="<%= @company.description %>"></textarea>
     <br/><input type="submit" value="Save"/>
   </form>
 </div>

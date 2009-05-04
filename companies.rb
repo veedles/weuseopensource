@@ -20,6 +20,13 @@ use Rack::Flash
 
 MAILER_ENABLED = false # Set this to true if you have a valid mail configuration in emailconfig.rb
 DOMAIN = 'localhost:4567'
+@@industry_list = [{'0' => 'Select your business category'},
+  {'1' => 'Pharmacueto'},
+  {'2' => 'Government'}].freeze
+@@usage_level_list = [
+  {'1' => 'Use'},
+  {'2' => 'Develop'},
+  {'3' => 'Sell'}].freeze
 
 module UuidHelper
   def generate_uuid
@@ -37,6 +44,8 @@ class Company
 
   property :id, Integer, :serial => true
   property :website, String, :nullable => false, :unique => true, :length => (1..100)
+  property :business_category, Integer, :nullable => false
+  property :usage_level, Integer, :nullable => false
   property :company_email, String, :nullable => false, :format => :email_address, :unique => true
   property :admin_email, String, :nullable => false, :format => :email_address, :unique => true
   property :name, String, :nullable => false
@@ -117,12 +126,16 @@ end
 
 get '/companies/new' do
   @company = Company.new
+  @industry_list = @@industry_list
+  @usage_level_list = @@usage_level_list
   erb :new
 end
 
 post '/companies' do
 
   @company = Company.new(
+    :business_category => params[:business_category],
+    :usage_level => params[:usage_level],
     :website => params[:company_website],
     :name => params[:company_name],
     :blurb => params[:company_blurb],
@@ -158,6 +171,8 @@ put '/companies/:uuid' do
   if @company.status == :activated
 
     if @company.update_attributes(
+      :business_category => params[:business_category],
+      :usage_level => params[:usage_level],
       :website => params[:company_website],
       :blurb => params[:company_blurb],
       :name => params[:company_name],
@@ -191,6 +206,22 @@ helpers do
     msg = "Please fix the following errors:<br /><ul>#{msg}</ul>" unless msg.empty?
     msg
   end
+
+  # Basic implementation of a HTML SELECT helper
+  def select(resource_name, field_name, options_list, selected_value)
+    html = ''
+    options_list.each do |nv_pair|
+      option_value = nv_pair.keys.first
+      option_name = nv_pair.values.first
+      html << "<option value=\"#{option_value}\""
+      html << " selected=\"true\"" if option_value == selected_value
+      html << '>'
+      html << option_name
+      html << "</option>"
+    end
+    "<select name=\"#{resource_name}_#{field_name}\">#{html}</select>"
+  end
+
 
 end
 
