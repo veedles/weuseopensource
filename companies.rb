@@ -20,7 +20,7 @@ use Rack::Flash
 
 MAILER_ENABLED = false # Set this to true if you have a valid mail configuration in emailconfig.rb
 DOMAIN = 'localhost:4567'
-load 'industry_list.rb' # Pulls in a list of industriesm simply defines @@industry_list
+load 'industry_list.rb' # Pulls in a list of industries simply defines @@industry_list
 
 @@usage_level_list = [
   {'1' => 'Use'},
@@ -42,23 +42,36 @@ class Company
 
 
   property :id, Integer, :serial => true
-  property :website, String, :nullable => false, :unique => true, :length => (1..100)
+  property :website, String, :unique => true, :length => (1..100)
   property :business_category, Integer, :nullable => false
   property :usage_level, Integer, :nullable => false
   property :company_email, String, :nullable => false, :format => :email_address, :unique => true
   property :admin_email, String, :nullable => false, :format => :email_address, :unique => true
-  property :name, String, :nullable => false
-  property :blurb, String, :nullable => false
-  property :description, Text
+  property :name, String, :unique => true, :length => (1..60)
+  property :blurb, String, :length => (1..300)
+  property :description, Text, :length => (1..2000)
   property :created_at, DateTime
   property :updated_at, DateTime
+  property :activated_at, DateTime, :default => nil
   property :uuid, String #OPTIMIZEME: When db platform decided optimize type used for storage
   property :status, Enum[:pending, :notified, :activated, :suspended], :nullable => false
 
   validates_with_method :admin_email, :method => :check_email_consistency_wrt_website
+  validates_with_method :blurb, :method => :blurb_legal_character_check
+  validates_with_method :description, :method => :description_legal_character_check
+
+  private
+  def blurb_legal_character_check; legal_character_check('Blurb', blurb); end
+  def description_legal_character_check; legal_character_check('Description', description); end
+
+  def legal_character_check(field, val)
+    success = [false, "#{field} cannot contain newlines or tabs"]
+    success = true if (/[\r\n\t]/.match val).nil?
+    success
+  end
 
   def check_email_consistency_wrt_website
-    consistency = [false, "The domain of the Admin Email and Company Website much match"]
+    consistency = [false, "The domain of the Admin Email and Company Website must match"]
 
     email_domain = admin_email.split('@')[1]
 
@@ -97,15 +110,19 @@ post '/activation/:uuid' do
   @company = Company.first(:uuid => params[:uuid])
 
   if @company.status == :notified
-    @company.update_attributes(:status => :activated)
-    @admin_link = "http://#{DOMAIN}/companies/#{@company.uuid}/edit"
+    if @company.update_attributes(:status => :activated, :activated_at => DateTime.now)
 
-    if MAILER_ENABLED 
-      send_confirmation_email('no-reply@example.com', @company.admin_email, 'Account Activated',
-      "Please click this link or copy and paste it into your browser #{@admin_link} to make changes to your account.")
+      @admin_link = "http://#{DOMAIN}/companies/#{@company.uuid}/edit"
+
+      if MAILER_ENABLED 
+        send_confirmation_email('no-reply@example.com', @company.admin_email, 'Account Activated',
+        "Please click this link or copy and paste it into your browser #{@admin_link} to make changes to your account.")
+      end
+
+      erb :'activation/welcome'
+    else #TODO: Change from exception
+      raise 'Your account cannot be activated.'
     end
-
-    erb :'activation/welcome'
   elsif @company.status == :activated # TODO: Change from exception
     raise 'Your account is already active.'
   else #TODO: Change from exception
@@ -116,10 +133,29 @@ end
 ### ### ### ### ### ###
 
 
+
+
+
+### company_summaries ###
+
+get '/company_summaries/:name' do
+    @company = Company.first(:name => params[:name])
+    erb(:'company_summaries/show', :layout => false)
+end
+
+### ### ### ### ### ###
+
+
+
+
+
 ### weuseopensource ###
 
 get '/' do
   @companies = Company.all
+  puts '************** URLS *******************'
+  @companies.each {|c| puts "#{c.name}: http://#{DOMAIN}/companies/#{c.uuid}/edit"}
+  puts '***************************************'
   erb :index
 end
 
@@ -189,7 +225,8 @@ put '/companies/:uuid' do
 
       redirect '/'
     else
-      erb :new
+      flash.now[:notice] = @company.errors
+      erb :edit
     end
 
   else #TODO: Change from exception
@@ -206,6 +243,8 @@ private
 ### HELPERS ###
 
 helpers do
+  include Rack::Utils
+  alias_method :h, :escape_html
 
   def format_errors(errors)
     msg = ''
