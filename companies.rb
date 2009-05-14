@@ -174,11 +174,6 @@ get '/' do
   erb :index
 end
 
-get '/companies/:handle' do
-  @company = Company.first(:handle => params[:handle])
-  erb :show
-end
-
 
 get '/companies/new' do
   @company = Company.new
@@ -186,6 +181,13 @@ get '/companies/new' do
   @usage_level_list = @@usage_level_list
   erb :new
 end
+
+
+get '/companies/:handle' do
+  @company = Company.first(:handle => params[:handle])
+  erb :show
+end
+
 
 post '/companies' do
   @industry_list = @@industry_list
