@@ -163,12 +163,22 @@ get '/' do
 
   @companies.each {|c| puts "#{c.name}: http://#{DOMAIN}/companies/#{c.uuid}/edit"}
 
+  puts '************** SHOW URLS *******************'
+
+  @companies.each {|c| puts "#{c.name}: http://#{DOMAIN}/companies/#{c.handle}"}
+
   puts '************** ACTIVATION URLS *******************'
   @companies.each {|c| puts "#{c.name}: http://#{DOMAIN}/activation/#{c.uuid}/new"}
 
   puts '***************************************'
   erb :index
 end
+
+get '/companies/:handle' do
+  @company = Company.first(:handle => params[:handle])
+  erb :show
+end
+
 
 get '/companies/new' do
   @company = Company.new
