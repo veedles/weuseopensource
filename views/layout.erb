@@ -1,14 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
+<title> We Use Opensource</title>
+   <meta http-equiv="content-type"  content="text/html;charset=utf-8"/>
+   <meta http-equiv="Content-Style-Type" content="text/css" />
+   <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css"/>
   <link href="/stylesheets/print.css" media="print" rel="stylesheet" type="text/css" />
-  <!--[if IE]>
+  <!--[if IE 7]>
       <link href="/stylesheets/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
   <![endif]-->
-  <link href="/stylesheets/main.css" media="screen" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="/scripts/jquery.js"></script>
-<script language="javascript" src="/scripts/jquery.textCounting.min.js"></script>
-<head>
+  <link href="/stylesheets/main.css" media="screen" rel="stylesheet" type="text/css"/>
+	<script type="text/javascript" src="/scripts/jquery.js"></script>
+	<script type="text/javascript" src="/scripts/jquery.textCounting.min.js"></script>
+	<script type="text/javascript" src="/scripts/jquery.validate.js"></script>
+       <script type="text/javascript" src="/scripts/validateTelephone.js"></script>
+ 
+      <!--[if lte IE 6]> 
+      <script type="text/javascript">  
+      //Fix IE6 background image flicker
+      function fixIE6flicker(fix) {
+        try {  
+      document.execCommand("BackgroundImageCache", false, fix);  
+      } catch(err) { }   
+      }   
+      window.onload = function() { fixIE6flicker(true); } 
+      </script> 
+      <![endif]-->
+     
+</head>
+
+
 <body>
 <% unless flash[:notice].blank? %>
   <div class="notice">
@@ -17,11 +39,13 @@
 <% end %>
 
 <div id = 'contain' class = 'clearfix'>
-	<div id = 'logo'>
+	<a href="<%= "http://#{DOMAIN}" %>" id = 'logo' title = "click to go Home">
 		
-	</div>
+	</a>
 <%= yield %>
 
 </div>
 <%= erb(:footer, :layout => false) %>
 </body>
+</html>
+
