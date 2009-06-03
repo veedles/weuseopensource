@@ -39,13 +39,28 @@
 <% end %>
 
 <div id = 'contain' class = 'clearfix'>
-	<a href="<%= "http://#{DOMAIN}" %>" id = 'logo' title = "click to go Home">
-		
-	</a>
+ <a href = "<%= "http://#{DOMAIN}" %>" id = 'logo' title = "click to go Home"> <img src = "../images/logo.gif" alt = "weuseopensource logo click to return to home page" height="110" width="803"/> </a> 
+    
 <%= yield %>
 
 </div>
 <%= erb(:footer, :layout => false) %>
+<script type="text/javascript">
+  var uservoiceJsHost = ("https:" == document.location.protocol) ? "https://uservoice.com" : "http://cdn.uservoice.com";
+  document.write(unescape("%3Cscript src='" + uservoiceJsHost + "/javascripts/widgets/tab.js' type='text/javascript'%3E%3C/script%3E"))
+</script>
+<script type="text/javascript">
+UserVoice.Tab.show({ 
+  key: 'weuseopensource',
+  host: 'weuseopensource.uservoice.com', 
+  forum: 'general', 
+  alignment: 'left',
+  background_color:'#f00', 
+  text_color: 'white',
+  hover_color: '#06C',
+  lang: 'en'
+})
+</script>
 </body>
 </html>
 
